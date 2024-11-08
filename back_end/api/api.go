@@ -40,22 +40,25 @@ func RunApi() {
 				Name:        "room1",
 				Temperature: 26,
 				Humidity:    60,
-				LightsOn:    []bool{true, false, true},
-				CurtainsON:  []bool{true, false, true},
+				LightsOn:    []int{0, 50, 101},
+				CurtainsON:  []int{0, 50, 100},
+				SocketsOn:   []bool{true, false, true},
 			},
 			{
 				Name:        "room2",
 				Temperature: 25,
 				Humidity:    60,
-				LightsOn:    []bool{true, false, true},
-				CurtainsON:  []bool{true, false, true},
+				LightsOn:    []int{0, 50, 101},
+				CurtainsON:  []int{0, 50, 100},
+				SocketsOn:   []bool{true, false, true},
 			},
 			{
 				Name:        "客厅",
 				Temperature: 24,
 				Humidity:    60,
-				LightsOn:    []bool{true, false, true},
-				CurtainsON:  []bool{true, false, true},
+				LightsOn:    []int{0, 50, 101},
+				CurtainsON:  []int{0, 50, 100},
+				SocketsOn:   []bool{true, false, true},
 			},
 		}
 		ctx.JSONP(200, gin.H{
@@ -63,12 +66,13 @@ func RunApi() {
 		})
 	})
 
-	// r.POST("/stat/control", func(ctx *gin.Context) {
-	// 	stat := homecontrol.Room{
-	// 		Name:        ctx.Query("Name"),
-	// 		Temperature: ctx.Q,
-	// 	}
-	// })
+	r.POST("/stat/control", func(c *gin.Context) {
+		json := homecontrol.Room{}
+		c.BindJSON(&json)
+		c.JSON(http.StatusOK, gin.H{
+			"stat": json,
+		})
+	})
 
 	r.Run()
 }

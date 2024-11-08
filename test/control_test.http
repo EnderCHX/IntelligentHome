@@ -1,0 +1,11 @@
+POST http://127.0.0.1:8080/stat/control    HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "test",
+    "temperature": 26,
+    "humidity": 60,
+    "lights": [100, 50],
+    "curtains": [0,100],
+    "sockets": [true, false]
+}

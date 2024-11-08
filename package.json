@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "ant-design-vue": "^4.2.5",
-    "vue-router": "^4.4.5"
-  }
-}
