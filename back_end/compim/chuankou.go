@@ -7,6 +7,8 @@ import (
 	"github.com/tarm/serial"
 )
 
+var connect := &serial.Config{}
+
 func Read(name string, baud int, stop string) string {
 	c := &serial.Config{Name: name, Baud: baud, ReadTimeout: time.Second * 5}
 	s, err := serial.OpenPort(c)
