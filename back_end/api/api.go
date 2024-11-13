@@ -1,13 +1,18 @@
 package api
 
 import (
-	"IntelligentHome/homecontrol"
+	"IntelligentHome/config"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RunApi() {
+	host := config.ConfigContext.ApiConfig.Host
+	port := config.ConfigContext.ApiConfig.Port
+	url := host + ":" + port
+	mode := config.ConfigContext.ApiConfig.Mode
+	gin.SetMode(mode)
 	r := gin.Default()
 	r.Use(Cors())
 
@@ -34,63 +39,9 @@ func RunApi() {
 		})
 	})
 
-	r.GET("/stat", func(ctx *gin.Context) {
-		stat := []homecontrol.Room{
-			{
-				Name:        "room1",
-				Temperature: 26,
-				Humidity:    60,
-				LightsOn:    []int{0, 50, 101},
-				CurtainsON:  []int{0, 50, 100},
-				SocketsOn:   []bool{true, false, true},
-			},
-			{
-				Name:        "room2",
-				Temperature: 25,
-				Humidity:    60,
-				LightsOn:    []int{0, 50, 101},
-				CurtainsON:  []int{0, 50, 100},
-				SocketsOn:   []bool{true, false, true},
-			},
-			{
-				Name:        "客厅",
-				Temperature: 24,
-				Humidity:    60,
-				LightsOn:    []int{0, 50, 101},
-				CurtainsON:  []int{0, 50, 100},
-				SocketsOn:   []bool{true, false, true},
-			},
-		}
-		ctx.JSONP(200, gin.H{
-			"stat": stat,
-		})
-	})
+	r.GET("/stat", GetStat)
 
-	r.POST("/stat/control", func(c *gin.Context) {
-		json := homecontrol.Room{}
-		c.BindJSON(&json)
-		c.JSON(http.StatusOK, gin.H{
-			"stat": json,
-		})
-	})
+	r.POST("/stat/control", StatControl)
 
-	r.Run()
-}
-
-func Cors() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		method := c.Request.Method
-		origin := c.Request.Header.Get("Origin")
-		if origin != "" {
-			c.Header("Access-Control-Allow-Origin", "*") // 可将将 * 替换为指定的域名
-			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
-			c.Header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
-			c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Cache-Control, Content-Language, Content-Type")
-			c.Header("Access-Control-Allow-Credentials", "true")
-		}
-		if method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusNoContent)
-		}
-		c.Next()
-	}
+	r.Run(url)
 }
