@@ -3,6 +3,7 @@ package api
 import (
 	"IntelligentHome/homecontrol"
 	"IntelligentHome/redis"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -27,11 +28,26 @@ func Cors() gin.HandlerFunc { //跨域中间件
 	}
 }
 
+type Stats struct {
+	TimeStamp int64              `json:"time_stamp"`
+	Stat      []homecontrol.Room `json:"stat"`
+}
+
 func GetStat(c *gin.Context) {
-	count := c.DefaultQuery("count", "1")
-	count, err := strconv.Atoi(count)
-	keyname := "ihome"
-	res, err := redis.ZRangeByScore(keyname, count)
+	countStr := c.DefaultQuery("count", "1")
+	count, _ := strconv.Atoi(countStr)
+	res, err := redis.ZRevRangeByScoreWithScores(int64(count))
+	dataStr := "[ "
+	for _, v := range res {
+		vMember := v.Member.(string)
+		dataStr += "{"
+		dataStr += "\"time_stamp\":" + strconv.FormatInt(int64(v.Score), 10) + ","
+		dataStr += vMember[1:len(vMember)-1] + "} ,"
+	}
+	dataStr = dataStr[:len(dataStr)-1] + " ]"
+	// log.Println(dataStr)
+	var data []Stats
+	json.Unmarshal([]byte(dataStr), &data)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"error": err.Error(),
@@ -39,14 +55,18 @@ func GetStat(c *gin.Context) {
 		return
 	}
 	c.JSONP(200, gin.H{
-		"stats": res,
+		"stats": data,
 	})
 }
 
 func StatControl(c *gin.Context) {
-	json := homecontrol.Room{}
-	c.BindJSON(&json)
+	homecontrol := homecontrol.RoomControl{}
+	c.BindJSON(&homecontrol)
+	homecontrol.SetLights()
+	homecontrol.SetCurtains()
+	homecontrol.SetSockets()
 	c.JSON(http.StatusOK, gin.H{
-		"stat": json,
+		"stat":    homecontrol,
+		"message": "success",
 	})
 }

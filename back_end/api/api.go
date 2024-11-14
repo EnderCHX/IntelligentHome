@@ -27,9 +27,8 @@ func RunApi() {
 	r.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"data":   "ciallo world",
-			"static": StaticWebPath,
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Ciallo! World!",
 		})
 	})
 

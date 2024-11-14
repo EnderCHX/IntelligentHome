@@ -43,9 +43,9 @@ public:
 
 	std::string GetInfo() {
 		std::string info = "{ \"name\": \""+ this->Name
-		+"\", \"temperature\": \"" + std::to_string(this->Temperature)
-		+"\", \"humidity\": \"" + std::to_string(this->Humidity)
-		+"\", \"lights\": [";
+		+"\", \"temperature\": " + std::to_string(this->Temperature)
+		+", \"humidity\": " + std::to_string(this->Humidity)
+		+", \"lights\": [";
 		for (int l = 0; l < this->LightsOn.size(); ++l) {
 			info += std::to_string(this->LightsOn[l]);
 			if (l < this->LightsOn.size() - 1) {

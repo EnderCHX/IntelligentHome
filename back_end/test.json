@@ -1,0 +1,136 @@
+[
+    {
+        "time_stamp": 1731584332,
+        "stats": {
+            "stat": [
+                {
+                    "name": "Living Room",
+                    "temperature": "1169",
+                    "humidity": "50.000000",
+                    "lights": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "curtains": [
+                        4,
+                        5,
+                        6
+                    ],
+                    "sockets": [
+                        1,
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "name": "Kitchen",
+                    "temperature": "1169",
+                    "humidity": "60.000000",
+                    "lights": [
+                        7,
+                        8,
+                        9
+                    ],
+                    "curtains": [
+                        10,
+                        11,
+                        12
+                    ],
+                    "sockets": [
+                        0,
+                        1,
+                        0
+                    ]
+                },
+                {
+                    "name": "Bedroom",
+                    "temperature": "1169",
+                    "humidity": "40.000000",
+                    "lights": [
+                        13,
+                        14,
+                        15
+                    ],
+                    "curtains": [
+                        16,
+                        17,
+                        18
+                    ],
+                    "sockets": [
+                        1,
+                        0,
+                        1
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "time_stamp": 1731584331,
+        "stats": {
+            "stat": [
+                {
+                    "name": "Living Room",
+                    "temperature": "1168",
+                    "humidity": "50.000000",
+                    "lights": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "curtains": [
+                        4,
+                        5,
+                        6
+                    ],
+                    "sockets": [
+                        1,
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "name": "Kitchen",
+                    "temperature": "1168",
+                    "humidity": "60.000000",
+                    "lights": [
+                        7,
+                        8,
+                        9
+                    ],
+                    "curtains": [
+                        10,
+                        11,
+                        12
+                    ],
+                    "sockets": [
+                        0,
+                        1,
+                        0
+                    ]
+                },
+                {
+                    "name": "Bedroom",
+                    "temperature": "1168",
+                    "humidity": "40.000000",
+                    "lights": [
+                        13,
+                        14,
+                        15
+                    ],
+                    "curtains": [
+                        16,
+                        17,
+                        18
+                    ],
+                    "sockets": [
+                        1,
+                        0,
+                        1
+                    ]
+                }
+            ]
+        }
+    }
+]

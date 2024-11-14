@@ -12,6 +12,8 @@ type RedisConfig struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	DB       int    `json:"db"`
+	KeyName  string `json:"key_name"` // 存储数据的key名称
+	MaxData  int    `json:"max_data"` // 最大数据量，单位：秒
 }
 
 type ApiConfig struct {
@@ -47,6 +49,8 @@ var DefaultConfig = Config{
 		Username: "",
 		Password: "",
 		DB:       0,
+		KeyName:  "ihome",
+		MaxData:  3600,
 	},
 	ChuanKouConfig: ChuanKouConfig{
 		Name: "COM2",
