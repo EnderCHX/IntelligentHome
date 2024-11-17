@@ -61,7 +61,11 @@ public:
 		}
 		info += "], \"sockets\": [";
 		for (int s = 0; s < this->SocketsOn.size(); ++s) {
-			info += std::to_string(this->SocketsOn[s]);
+			if( this->SocketsOn[s] ) {
+				info += "true";
+			} else {
+				info += "false";
+			}
 			if (s < this->SocketsOn.size() - 1) {
 				info += ", ";
 			}
@@ -84,7 +88,7 @@ std::string GetStat(std::vector<Room> rooms) {
 }
 
 int main() {
-	Room room("Living Room", 20, 50, {1, 2, 3}, {4, 5, 6}, {true, false, true});
+	Room room("Living Room", 20, 50, {1, 2, 3, 4}, {3,4, 5, 6}, {false, true, false, true});
 	Room room2("Kitchen", 15, 60, {7, 8, 9}, {10, 11, 12}, {false, true, false});
     Room room3("Bedroom", 25, 40, {13, 14, 15}, {16, 17, 18}, {true, false, true}); 
 	std::vector<Room> rooms = {room, room2, room3};

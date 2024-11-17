@@ -2,7 +2,6 @@ package api
 
 import (
 	"IntelligentHome/config"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,22 +15,6 @@ func RunApi() {
 	r := gin.Default()
 	r.Use(Cors())
 
-	const (
-		StaticPath    = "./static"
-		StaticWebPath = "static"
-		TemplatesPath = "./templates/*"
-	)
-	r.LoadHTMLGlob(TemplatesPath)
-	r.Static(StaticWebPath, StaticPath)
-
-	r.StaticFile("/favicon.ico", "./static/favicon.ico")
-
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Ciallo! World!",
-		})
-	})
-
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -41,6 +24,8 @@ func RunApi() {
 	r.GET("/stat", GetStat)
 
 	r.POST("/stat/control", StatControl)
+
+	r.GET("/ws", WebSocketHandler)
 
 	r.Run(url)
 }

@@ -2,7 +2,7 @@
     "api_config": {
         "host": "127.0.0.1",
         "port": "1314",
-        "mode": "debug"
+        "mode": "release"
     },
     "redis_config": {
         "host": "localhost",
