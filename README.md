@@ -5,11 +5,11 @@
 ### 1. 配置文件
 
 #### api_config ：API服务的配置
-host ：API服务的IP地址
+    host ：API服务的IP地址
 
-port ：API服务的端口号
+    port ：API服务的端口号
 
-mode ：API服务的运行模式，release或debug
+    mode ：API服务的运行模式，release或debug
 
 #### redis_config ：Redis的配置
 
