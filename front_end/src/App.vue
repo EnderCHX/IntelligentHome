@@ -14,6 +14,7 @@ hljs.registerLanguage('cpp', cpp)
 
 const isDark = ref(false);
 const theme = ref(lightTheme);
+const title = ref('智能家居');
 
 const toggleTheme = (value) => {
   isDark.value = value;

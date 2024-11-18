@@ -3,6 +3,7 @@ package serial
 import (
 	"IntelligentHome/config"
 	"IntelligentHome/redis"
+	"fmt"
 	"log"
 	"regexp"
 	"time"
@@ -47,7 +48,10 @@ func ReadAndSave() { //读取数据存入数据库
 		matches := re.FindStringSubmatch(data)
 		if len(matches) > 1 {
 			// log.Println("Extracted text:", matches[1]) // matches[1]是第一个括号中的内容
-			redis.ZAdd("ihome", float64(time.Now().Unix()), matches[1])
+			time_stamp := time.Now().Unix()
+			save := fmt.Sprintf("{\"time_stamp\":%d, %s}", time_stamp, matches[1][1:len(matches[1])-1])
+			// log.Println(save)
+			redis.ZAdd("ihome", float64(time_stamp), save)
 			data = ""
 		}
 		// } else {

@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"time"
+
+	"math/rand"
 
 	"github.com/tarm/serial"
 )
@@ -33,12 +36,34 @@ func Read() string {
 
 }
 
+func ReadAndSave() { //读取数据存入数据库
+	data := ""
+	re := regexp.MustCompile(`#\{(.*?)\}#`)
+	for {
+		// time.Sleep(1 * time.Second)
+		data += Read()
+		matches := re.FindStringSubmatch(data)
+		if len(matches) > 1 {
+			// log.Println("Extracted text:", matches[1]) // matches[1]是第一个括号中的内容
+			fmt.Println(data)
+			data = ""
+		}
+		// } else {
+		// 	// log.Println("No match found")
+		// }
+	}
+}
+
 func main() {
-	Init("COM1", 9600)
+	Init("/dev/pts/4", 9600)
+	// go ReadAndSave()
 	count := 1
 	for {
-		data := fmt.Sprintf(`#{{ "stat": [{ "name": "Living Room", "temperature": %d, "humidity": 50.000000, "lights": [101, 2, 3, 4], "curtains": [3, 101, 5, 6], "sockets": [false, true, false, true] }, { "name": "Kitchen", "temperature": %d, "humidity": 60.000000, "lights": [7, 8, 9], "curtains": [10, 11, 12], "sockets": [false, true, false] }, { "name": "Bedroom", "temperature": %d, "humidity": 40.000000, "lights": [13, 14, 15], "curtains": [16, 17, 18], "sockets": [true, false, true] }] }}#`, count, count, count)
-		count++
+		rand.Seed(time.Now().UnixNano())
+		count = rand.Intn(15) + 15
+		data := fmt.Sprintf(`#{{ "stat": [{ "name": "Living Room", "temperature": %d, "humidity": %d , "lights": [101, 2, 3, 4], "curtains": [3, 101, 5, 6], "sockets": [true, true, false, true] }, { "name": "Kitchen", "temperature": %d, "humidity": %d, "lights": [7, 8, 9], "curtains": [10, 11, 12], "sockets": [false, true, false] }, { "name": "Bedroom", "temperature": %d, "humidity": %d, "lights": [13, 14, 15], "curtains": [16, 17, 18], "sockets": [true, false, true] }] }}#`, count, count, count, count, count, count)
+		// count++
+
 		SerialPort.Write([]byte(data))
 		time.Sleep(time.Second * 1)
 	}

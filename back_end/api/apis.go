@@ -151,9 +151,10 @@ func GetDataJson(count int) ([]Stats, error) {
 	dataStr := "[ "
 	for _, v := range res {
 		vMember := v.Member.(string)
-		dataStr += "{"
-		dataStr += "\"time_stamp\":" + strconv.FormatInt(int64(v.Score), 10) + ","
-		dataStr += vMember[1:len(vMember)-1] + "} ,"
+		// dataStr += "{"
+		// dataStr += "\"time_stamp\":" + strconv.FormatInt(int64(v.Score), 10) + ","
+		// dataStr += vMember[1:len(vMember)-1] + "} ,"
+		dataStr += vMember + ","
 	}
 	dataStr = dataStr[:len(dataStr)-1] + " ]"
 	// log.Println(dataStr)

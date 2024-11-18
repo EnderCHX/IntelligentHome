@@ -69,7 +69,7 @@
                             v-model:value="socketvalue[index]"
                             @update:value="changeSocket(stat.name, socketvalue, $event)" />
                     </n-icon>
-                    <n-statistic>插座{{ index + 1 }}</n-statistic>
+                    <n-statistic>插座{{ index + 1 }} : {{ socket_ ? '开' : '关' }}</n-statistic>
                     <n-divider dashed v-if="index < stat.sockets.length - 1" />
                 </n-row>
             </template>
