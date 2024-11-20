@@ -55,7 +55,7 @@ func ReadAndSave() { //读取数据存入数据库
 }
 
 func main() {
-	Init("/dev/pts/4", 9600)
+	Init("/dev/pts/7", 9600)
 	// go ReadAndSave()
 	count := 1
 	for {

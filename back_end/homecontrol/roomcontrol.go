@@ -42,3 +42,7 @@ func (c *RoomControl) SetSockets() {
 	cmd += "}#"
 	serial.SendCommand(cmd)
 }
+
+/*
+	#{set room1 lights 100 100 100 100}#
+*/
