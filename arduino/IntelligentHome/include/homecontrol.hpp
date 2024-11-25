@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Arduino_FreeRTOS.h>
 #include <SimpleDHT.h>
+#include <Servo.h>
 
 #define MAX_LIGHTS 10       // 最大灯光数量
 #define MAX_CURTAINS 10     // 最大窗帘数量
@@ -43,6 +44,7 @@ class RoomController {
         SimpleDHT11 Dht;
         int LIGHT_PINS[MAX_LIGHTS];
         int CURTAIN_PINS[MAX_CURTAINS];
+        Servo Servos[MAX_CURTAINS];
         int SOCKET_PINS[3];
         byte *SOCKET_STATE;
         byte SOCKET_ADDRS[MAX_SOCKETS];
@@ -58,6 +60,7 @@ class RoomController {
             int ldr_pin,
             int light_pins[],
             int curtain_pins[],
+            Servo servos[],
             int socket_pins[2],
             byte *socket_state,
             byte socket_addrs[]
@@ -73,6 +76,7 @@ class RoomController {
         void AutoCurtain(int min, int max);
 
         int GetDHTPin();
+        int *GetCurtainPins();
         
 
         void SetLights(int lights[MAX_LIGHTS]);

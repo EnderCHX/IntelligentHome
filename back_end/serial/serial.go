@@ -72,7 +72,7 @@ func ReadAndSaveLite() {
 		if len(matches) > 1 {
 			result := strings.Split(matches[1], "_")
 			if len(result) > 0 {
-				log.Println(result)
+				// log.Println(result)
 				time_stamp := time.Now().Unix()
 				roomName := result[0]
 				temperature := result[1]

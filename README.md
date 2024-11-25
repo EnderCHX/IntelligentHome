@@ -1,4 +1,4 @@
-# IntelligentHome
+# IntelligentHome(智能家居) 哈尔滨工程大学嵌入式系统课程设计
 
 ## 一、back_end
 
