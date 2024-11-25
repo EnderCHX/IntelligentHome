@@ -15,6 +15,6 @@
     },
     "chuan_kou_config": {
         "name": "COM2",
-        "baud": 9600
+        "baud": 115200
     }
 }

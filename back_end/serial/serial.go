@@ -72,6 +72,7 @@ func ReadAndSaveLite() {
 		if len(matches) > 1 {
 			result := strings.Split(matches[1], "_")
 			if len(result) > 0 {
+				log.Println(result)
 				time_stamp := time.Now().Unix()
 				roomName := result[0]
 				temperature := result[1]
@@ -92,6 +93,7 @@ func ReadAndSaveLite() {
 				}
 				save := fmt.Sprintf("{\"time_stamp\":%d, \"stat\": [ { \"name\": \"%s\", \"temperature\": %s, \"humidity\": %s, \"lights\": [ %s ], \"curtains\": [ %s ], \"sockets\": [ %s ] } ] } ", time_stamp, roomName, temperature, humidity, lights, curtains, sockets)
 				redis.ZAdd("ihome", float64(time_stamp), save)
+				data = ""
 			}
 		}
 	}

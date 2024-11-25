@@ -3,8 +3,8 @@
 
 
 #include <Arduino.h>
-#include <DHT.h>
-
+#include <Arduino_FreeRTOS.h>
+#include <SimpleDHT.h>
 
 #define MAX_LIGHTS 10       // 最大灯光数量
 #define MAX_CURTAINS 10     // 最大窗帘数量
@@ -12,7 +12,7 @@
 
 class Room {
     public:
-        String Name;
+        int RoomID;
         float Temperature;
         float Humidity;
         int LightCount;
@@ -21,9 +21,10 @@ class Room {
         int CurtainsON[MAX_CURTAINS];
         int SocketCount;
         bool SocketsOn[MAX_SOCKETS];
+        int LDRValue;
 
         Room(
-            String name,
+            int id,
             float temperature,
             float humidity,
             int lightcount,
@@ -39,19 +40,22 @@ class Room {
 class RoomController {
     private:
         int DHT_PIN;
-        DHT *Dht;
+        SimpleDHT11 Dht;
         int LIGHT_PINS[MAX_LIGHTS];
         int CURTAIN_PINS[MAX_CURTAINS];
         int SOCKET_PINS[3];
         byte *SOCKET_STATE;
         byte SOCKET_ADDRS[MAX_SOCKETS];
-
+        int LDR_PIN;
+        bool IF_LIGHT_AUTO[MAX_LIGHTS];
+        bool IF_CURTAIN_AUTO[MAX_CURTAINS];
     public:
         Room *ROOM;
         
         RoomController(
             Room *room,
             int dht_pin,
+            int ldr_pin,
             int light_pins[],
             int curtain_pins[],
             int socket_pins[2],
@@ -60,26 +64,16 @@ class RoomController {
         );
 
         void Init();
-        void DHTBegin();
+        // void DHTBegin();
 
-        float GetTemperature();
-        float GetHumidity();
+        void UpdateTemperatureAndHumidityAndLDRValue();
 
-        bool SetDHTPin(int pin);
-        bool SetLightPins(int* pins);
-        bool SetCurtainPins(int* pins);
-        bool SetSocketPins(int* pins);
-        bool SetSocketAddrs(String* addrs);
-        bool SetFanPins(int* pins);
-        bool SetFanAddrs(String* addrs);
+        void AutoLight(int min, int max);
+
+        void AutoCurtain(int min, int max);
 
         int GetDHTPin();
-        int* GetLightPins();
-        int* GetCurtainPins();
-        int* GetSocketPins();
-        String* GetSocketAddrs();
         
-        DHT* GetDht();
 
         void SetLights(int lights[MAX_LIGHTS]);
         void SetCurtains(int curtains[MAX_CURTAINS]);
@@ -87,7 +81,7 @@ class RoomController {
 };
 
 
-void JsonPrint(RoomController *controllers, int count);
-void PrintStatus(RoomController* rc, int count);
+// void JsonPrint(RoomController *controllers, int count);
+// void PrintStatus(RoomController* rc, int count);
 
 #endif

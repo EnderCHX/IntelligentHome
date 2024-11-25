@@ -3,6 +3,7 @@ package homecontrol
 import (
 	"IntelligentHome/serial"
 	"fmt"
+	"log"
 )
 
 type RoomControl struct {
@@ -45,21 +46,32 @@ func (c *RoomControl) SetSockets() {
 
 func (c *RoomControl) SetAll() {
 	cmd := ""
-	for _, light := range c.LightsOn {
-		cmd += fmt.Sprintf("%d,", light)
-	}
-	cmd += "_"
-	for _, curtain := range c.CurtainsON {
-		cmd += fmt.Sprintf("%d,", curtain)
-	}
-	cmd += "_"
-	for _, socket := range c.SocketsOn {
-		if socket {
-			cmd += "1,"
-		} else {
-			cmd += "0,"
+	for i, light := range c.LightsOn {
+		cmd += fmt.Sprintf("%d", light)
+		if i < len(c.LightsOn)-1 {
+			cmd += ","
 		}
 	}
+	cmd += "_"
+	for i, curtain := range c.CurtainsON {
+		cmd += fmt.Sprintf("%d", curtain)
+		if i < len(c.CurtainsON)-1 {
+			cmd += ","
+		}
+	}
+	cmd += "_"
+	for i, socket := range c.SocketsOn {
+		if socket {
+			cmd += "1"
+		} else {
+			cmd += "0"
+		}
+		if i < len(c.SocketsOn)-1 {
+			cmd += ","
+		}
+	}
+	cmd += "\r\n"
+	log.Println(cmd)
 	serial.SendCommand(cmd)
 }
 
