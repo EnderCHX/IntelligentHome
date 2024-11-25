@@ -43,6 +43,26 @@ func (c *RoomControl) SetSockets() {
 	serial.SendCommand(cmd)
 }
 
+func (c *RoomControl) SetAll() {
+	cmd := ""
+	for _, light := range c.LightsOn {
+		cmd += fmt.Sprintf("%d,", light)
+	}
+	cmd += "_"
+	for _, curtain := range c.CurtainsON {
+		cmd += fmt.Sprintf("%d,", curtain)
+	}
+	cmd += "_"
+	for _, socket := range c.SocketsOn {
+		if socket {
+			cmd += "1,"
+		} else {
+			cmd += "0,"
+		}
+	}
+	serial.SendCommand(cmd)
+}
+
 /*
 	#{set room1 lights 100 100 100 100}#
 */

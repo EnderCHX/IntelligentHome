@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/tarm/serial"
@@ -24,7 +25,8 @@ func Init() {
 	} else {
 		log.Printf("Serial port %s opened successfully.\n", name)
 	}
-	go ReadAndSave()
+	// go ReadAndSave()
+	go ReadAndSaveLite()
 }
 
 func Read() string {
@@ -57,6 +59,41 @@ func ReadAndSave() { //读取数据存入数据库
 		// } else {
 		// 	// log.Println("No match found")
 		// }
+	}
+}
+
+func ReadAndSaveLite() {
+	data := ""
+	re := regexp.MustCompile(`#\{(.*?)\}#`)
+	for {
+		time.Sleep(1 * time.Second)
+		data += Read()
+		matches := re.FindStringSubmatch(data)
+		if len(matches) > 1 {
+			result := strings.Split(matches[1], "_")
+			if len(result) > 0 {
+				time_stamp := time.Now().Unix()
+				roomName := result[0]
+				temperature := result[1]
+				humidity := result[2]
+				lights := result[3]
+				curtains := result[4]
+				socketsstr := strings.Split(result[5], ",")
+				sockets := ""
+				for i, socketstr := range socketsstr {
+					if socketstr == "1" {
+						sockets += "true"
+					} else if socketstr == "0" {
+						sockets += "false"
+					}
+					if i < len(socketsstr)-1 {
+						sockets += ","
+					}
+				}
+				save := fmt.Sprintf("{\"time_stamp\":%d, \"stat\": [ { \"name\": \"%s\", \"temperature\": %s, \"humidity\": %s, \"lights\": [ %s ], \"curtains\": [ %s ], \"sockets\": [ %s ] } ] } ", time_stamp, roomName, temperature, humidity, lights, curtains, sockets)
+				redis.ZAdd("ihome", float64(time_stamp), save)
+			}
+		}
 	}
 }
 

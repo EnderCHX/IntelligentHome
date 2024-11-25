@@ -80,9 +80,10 @@ func WebSocketHandler(c *gin.Context) {
 			case "control":
 				homecontrol := homecontrol.RoomControl{}
 				json.Unmarshal([]byte(wsMessage.Else), &homecontrol)
-				homecontrol.SetLights()
-				homecontrol.SetCurtains()
-				homecontrol.SetSockets()
+				// homecontrol.SetLights()
+				// homecontrol.SetCurtains()
+				// homecontrol.SetSockets()
+				homecontrol.SetAll()
 				message, err := json.Marshal(homecontrol)
 				if err != nil {
 					ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
@@ -134,9 +135,10 @@ func StatControl(c *gin.Context) {
 	homecontrol := homecontrol.RoomControl{}
 	c.BindJSON(&homecontrol)
 	log.Println(homecontrol)
-	homecontrol.SetLights()
-	homecontrol.SetCurtains()
-	homecontrol.SetSockets()
+	// homecontrol.SetLights()
+	// homecontrol.SetCurtains()
+	// homecontrol.SetSockets()
+	homecontrol.SetAll()
 	c.JSON(http.StatusOK, gin.H{
 		"stat":    homecontrol,
 		"message": "success",

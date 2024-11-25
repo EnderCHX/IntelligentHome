@@ -59,7 +59,7 @@ func readd() {
 }
 
 func main() {
-	Init("COM2", 9600)
+	Init("/dev/pts/10", 9600)
 	// go ReadAndSave()
 	// count := 1
 	go readd()
@@ -68,7 +68,7 @@ func main() {
 		// count = rand.Intn(15) + 15
 		// data := fmt.Sprintf(`#{{ "stat": [{ "name": "Living Room", "temperature": %d, "humidity": %d , "lights": [101, 2, 3, 4], "curtains": [3, 101, 5, 6], "sockets": [true, true, false, true] }, { "name": "Kitchen", "temperature": %d, "humidity": %d, "lights": [7, 8, 9], "curtains": [10, 11, 12], "sockets": [false, true, false] }, { "name": "Bedroom", "temperature": %d, "humidity": %d, "lights": [13, 14, 15], "curtains": [16, 17, 18], "sockets": [true, false, true] }] }}#`, count, count, count, count, count, count)
 		// count++
-		data := "0_50_100,20_1,1,1,0"
+		data := "#{BedRoom_26_70_50,100_100,20_1,1,1,0,1,1,1,1}#"
 		SerialPort.Write([]byte(data))
 		time.Sleep(time.Second * 1)
 	}
