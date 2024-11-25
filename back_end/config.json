@@ -14,7 +14,7 @@
         "max_data": 600
     },
     "chuan_kou_config": {
-        "name": "/dev/pts/8",
+        "name": "COM2",
         "baud": 9600
     }
 }

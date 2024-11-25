@@ -43,7 +43,7 @@ func ReadAndSave() { //读取数据存入数据库
 	data := ""
 	re := regexp.MustCompile(`#\{(.*?)\}#`)
 	for {
-		// time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Second)
 		data += Read()
 		matches := re.FindStringSubmatch(data)
 		if len(matches) > 1 {

@@ -1,110 +1,245 @@
 #include "homecontrol.hpp"
 
 Room::Room(
-    String name, 
-    double temperature, 
-    double humidity, 
-    std::vector<int> lights_on, 
-    std::vector<int> curtains_on, 
-    std::vector<bool> sockets_on,
-    std::vector<bool> fans_on
-        ){
-        Name = name;
-        Temperature = temperature;
-        Humidity = humidity;            
-        LightsOn = lights_on;
-        CurtainsON = curtains_on;
-        SocketsOn = sockets_on;
-        FansOn = fans_on;
+    String name,
+    float temperature,
+    float humidity,
+    int lightcount,
+    int lightson[],
+    int curtaincount,
+    int curtainson[],
+    int socketcount,
+    bool socketson[]
+){
+    Name = name;
+    Temperature = temperature;
+    Humidity = humidity;
+    LightCount = lightcount;
+    CurtainCount = curtaincount;
+    SocketCount = socketcount;
+
+    for(int i = 0; i < lightcount; i++) {
+        LightsOn[i] = lightson[i];
+    }
+    for(int i = 0; i < curtaincount; i++) {
+        CurtainsON[i] = curtainson[i];
+    }
+    for(int i = 0; i < socketcount; i++) {
+        SocketsOn[i] = socketson[i];
+    }
 }
 
 Room::Room() {
-    Name = "RoomName";
-    Temperature = 0.0;
-    Humidity = 0.0;
-    LightsOn = std::vector<int>();
-    CurtainsON = std::vector<int>();
-    SocketsOn = std::vector<bool>();
+    Name = "";
+    Temperature = 0;
+    Humidity = 0;
+    LightCount = 0;
+    CurtainCount = 0;
+    SocketCount = 0;
+
 }
 
-RoomController::RoomController(Room room,
+RoomController::RoomController(
+    Room *room,
     int dht_pin,
-    std::vector<int> light_pins,
-    std::vector<int> curtain_pins,
-    std::vector<int> socket_pins,
-    std::vector<String> socket_addrs,
-    std::vector<int> fan_pins,
-    std::vector<String> fan_addrs) {
-        ROOM = room;
-        DHT_PIN = dht_pin;
-        LIGHT_PINS = light_pins;
-        CURTAIN_PINS = curtain_pins;
-        SOCKET_PINS = socket_pins;
-        SOCKET_ADDRS = socket_addrs;
-        FAN_PINS = fan_pins;
-        FAN_ADDRS = fan_addrs;
-}
-
-RoomController::RoomController() {
-    DHT_PIN = -1;
-    LIGHT_PINS = std::vector<int>();
-    CURTAIN_PINS = std::vector<int>();
-    SOCKET_PINS = std::vector<int>();
-    SOCKET_ADDRS = std::vector<String>();
-    FAN_PINS = std::vector<int>();
-    FAN_ADDRS = std::vector<String>();
-}
-
-RoomController::RoomController(Room room) {
+    int light_pins[],
+    int curtain_pins[],
+    int socket_pins[3],
+    byte *socket_state,
+    byte socket_addrs[]
+) {
     ROOM = room;
-    DHT_PIN = -1;
-    LIGHT_PINS = std::vector<int>();
-    CURTAIN_PINS = std::vector<int>();
-    SOCKET_PINS = std::vector<int>();
-    SOCKET_ADDRS = std::vector<String>();
-    FAN_PINS = std::vector<int>();
-    FAN_ADDRS = std::vector<String>();
+    DHT_PIN = dht_pin;
+    SOCKET_PINS[0] = socket_pins[0];
+    SOCKET_PINS[1] = socket_pins[1];
+    SOCKET_PINS[2] = socket_pins[2];
+    SOCKET_STATE = socket_state;
+    Dht = new DHT(DHT_PIN, DHT11);
+    for(int i = 0; i < room->LightCount; i++) {
+        LIGHT_PINS[i] = light_pins[i];
+    }
+    for(int i = 0; i < room->CurtainCount; i++) {
+        CURTAIN_PINS[i] = curtain_pins[i];
+    }
+    for(int i = 0; i < room->SocketCount; i++) {
+        SOCKET_ADDRS[i] = socket_addrs[i];
+    }
 }
 
-JsonEncoder::JsonEncoder(Room room) { ROOM = room; };
-
-String JsonEncoder::Encode() {
-    String json = "#{{";
-    json += "\"name\":\"" + ROOM.Name + "\",";
-    json += "\"temperature\":" + String(ROOM.Temperature) + ",";
-    json += "\"humidity\":" + String(ROOM.Humidity) + ",";
-    json += "\"lights\":[";
-    for (unsigned int i = 0; i < ROOM.LightsOn.size(); i++) {
-        json += String(ROOM.LightsOn[i]);
-        if (i != ROOM.LightsOn.size() - 1) {
-            json += ",";
-        }
+void RoomController::Init() {
+    for (int i = 0; i < ROOM->LightCount; i++) {
+        pinMode(LIGHT_PINS[i], OUTPUT);
     }
-    json += "],";
-    json += "\"curtains\":[";
-    for (unsigned int i = 0; i < ROOM.CurtainsON.size(); i++) {
-        json += String(ROOM.CurtainsON[i]);
-        if (i != ROOM.CurtainsON.size() - 1) {
-            json += ",";
-        }
+    for (int i = 0; i < ROOM->CurtainCount; i++) {
+        pinMode(CURTAIN_PINS[i], OUTPUT);
     }
-    json += "],";
-    json += "\"sockets\":[";
-    for (unsigned int i = 0; i < ROOM.SocketsOn.size(); i++) {
-        json += String(ROOM.SocketsOn[i]);
-        if (i != ROOM.SocketsOn.size() - 1) {
-            json += ",";
-        }
-    }
-    json += "],";
-    json += "\"fans\":[";
-    for (unsigned int i = 0; i < ROOM.FansOn.size(); i++) {
-        json += String(ROOM.FansOn[i]);
-        if (i != ROOM.FansOn.size() - 1) {
-            json += ",";
-        }
-    }
-    json += "]";
-    json += "}}#";
-    return json;
 }
+
+void RoomController::DHTBegin() {
+    Dht->begin();
+}
+
+DHT* RoomController::GetDht() {
+    return Dht;
+}
+
+float RoomController::GetTemperature() {
+    ROOM->Temperature = Dht->readTemperature();
+    return ROOM->Temperature;
+}
+
+float RoomController::GetHumidity() {
+    ROOM->Humidity = Dht->readHumidity();
+    return ROOM->Humidity;
+}
+
+void RoomController::SetLights(int lights[MAX_LIGHTS]){
+    for(int i = 0; i < ROOM->LightCount; i++) {
+        ROOM->LightsOn[i] = lights[i];
+        if (ROOM->LightsOn[i] <= 100) {
+            analogWrite(LIGHT_PINS[i], (ROOM->LightsOn[i]) * 255 / 100);
+        } else {
+            //自动控制 TODO
+            return;
+        }
+
+    }
+}
+
+void RoomController::SetCurtains(int curtains[MAX_CURTAINS]){
+    for(int i = 0; i < ROOM->CurtainCount; i++) {
+        ROOM->CurtainsON[i] = curtains[i];
+        if (ROOM->CurtainsON[i] <= 100) {
+            analogWrite(CURTAIN_PINS[i], (ROOM->CurtainsON[i]) * 255 / 100);
+        } else {
+            //自动控制 TODO
+            return;
+        }
+    }
+}
+
+void RoomController::SetSockets(bool sockets[MAX_SOCKETS]){
+    for(int i = 0; i < ROOM->SocketCount; i++) {
+        ROOM->SocketsOn[i] = sockets[i];
+        byte addr = SOCKET_ADDRS[i];
+        if (ROOM->SocketsOn[i]) {
+            *SOCKET_STATE |= (1 << addr);
+        } else {
+            *SOCKET_STATE &= ~(1 << addr);
+        }
+        Serial.println(*SOCKET_STATE, BIN);
+    }
+    Serial.println(*SOCKET_STATE, BIN);
+    digitalWrite(SOCKET_PINS[2], LOW);
+    shiftOut(SOCKET_PINS[0], SOCKET_PINS[1], MSBFIRST, *SOCKET_STATE);
+    digitalWrite(SOCKET_PINS[2], HIGH);
+}
+
+void PrintStatus(RoomController* rc, int count) {
+    Serial.print("Room Status: #{");
+    for (int i = 0; i < count; ++i) {
+        Serial.print(rc[i].ROOM->Name);
+        Serial.print("_");
+        Serial.print(rc[i].ROOM->Temperature);
+        Serial.print("_");
+        Serial.print(rc[i].ROOM->Humidity);
+        Serial.print("_");
+
+        for (int j = 0; j < rc[i].ROOM->LightCount; ++j) {
+            Serial.print(rc[i].ROOM->LightsOn[j]);
+            if (j < rc[i].ROOM->LightCount - 1) {
+                Serial.print(",");
+            }
+        }
+        Serial.print("_");
+
+        for (int j = 0; j < rc[i].ROOM->CurtainCount; ++j) {
+            Serial.print(rc[i].ROOM->CurtainsON[j]);
+            if (j < rc[i].ROOM->CurtainCount - 1) {
+                Serial.print(",");
+            }
+        }
+        Serial.print("_");
+
+        for (int j = 0; j < rc[i].ROOM->SocketCount; ++j) {
+            Serial.print(rc[i].ROOM->SocketsOn[j]);
+            if (j < rc[i].ROOM->SocketCount - 1) {
+                Serial.print(",");
+            }
+        }
+
+        if (i < count - 1) {
+            Serial.print("|");
+        }
+    }
+    Serial.print("}#");
+    Serial.println();
+}
+
+
+// String PrintStatuss(RoomController* rc, int count) {
+//     String status = "Room Status: #{";
+//     for (int i = 0; i < count; ++i) {
+//         status = status + rc[i].ROOM->Name + "_" + rc[i].ROOM->Temperature + "_" + rc[i].ROOM->Humidity + "_";
+//         for (int j = 0; j < rc[i].ROOM->LightCount; ++j) {
+//             status += rc[i].ROOM->LightsOn[j];
+//             if (j < rc[i].ROOM->LightCount - 1) {
+//                 status += ",";
+//             }
+//         }
+//         status += "_";
+//         for (int j = 0; j < rc[i].ROOM->CurtainCount; ++j) {
+//             status += rc[i].ROOM->CurtainsON[j];
+//             if (j < rc[i].ROOM->CurtainCount - 1) {
+//                 status += ",";
+//             }
+//         }
+//         status += "_";
+//         for (int j = 0; j < rc[i].ROOM->SocketCount; ++j) {
+//             status += rc[i].ROOM->SocketsOn[j];
+//             if (j < rc[i].ROOM->SocketCount - 1) {
+//                 status += ",";
+//             }
+//         }
+
+        
+//         if (i < count - 1) {
+//             status += "|";
+//         }
+//     }
+//     status += "}#";
+//     return status;
+// }
+
+
+
+// void PrintStatus(RoomController *controllers, int count) {
+//     StaticJsonDocument<512> doc; // 预分配缓冲区
+//     JsonArray stat = doc.createNestedArray("stat");
+
+//     for (int i = 0; i < count; ++i) {
+//         JsonObject room = stat.createNestedObject();
+//         room["name"] = controllers[i].ROOM->Name;
+//         room["temperature"] = controllers[i].ROOM->Temperature;
+//         room["humidity"] = controllers[i].ROOM->Humidity;
+
+//         JsonArray lights = room.createNestedArray("lights");
+//         for (int j = 0; j < controllers[i].ROOM->LightCount; ++j) {
+//             lights.add(controllers[i].ROOM->LightsOn[j]);
+//         }
+
+//         JsonArray curtains = room.createNestedArray("curtains");
+//         for (int j = 0; j < controllers[i].ROOM->CurtainCount; ++j) {
+//             curtains.add(controllers[i].ROOM->CurtainsON[j]);
+//         }
+
+//         JsonArray sockets = room.createNestedArray("sockets");
+//         for (int j = 0; j < controllers[i].ROOM->SocketCount; ++j) {
+//             sockets.add(controllers[i].ROOM->SocketsOn[j]);
+//         }
+
+//     }
+
+//     serializeJsonPretty(doc, Serial); // 一次性发送完整 JSON
+
+// }

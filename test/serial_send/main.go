@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"time"
 
-	"math/rand"
-
 	"github.com/tarm/serial"
 )
 
@@ -54,16 +52,23 @@ func ReadAndSave() { //读取数据存入数据库
 	}
 }
 
-func main() {
-	Init("/dev/pts/7", 9600)
-	// go ReadAndSave()
-	count := 1
+func readd() {
 	for {
-		rand.Seed(time.Now().UnixNano())
-		count = rand.Intn(15) + 15
-		data := fmt.Sprintf(`#{{ "stat": [{ "name": "Living Room", "temperature": %d, "humidity": %d , "lights": [101, 2, 3, 4], "curtains": [3, 101, 5, 6], "sockets": [true, true, false, true] }, { "name": "Kitchen", "temperature": %d, "humidity": %d, "lights": [7, 8, 9], "curtains": [10, 11, 12], "sockets": [false, true, false] }, { "name": "Bedroom", "temperature": %d, "humidity": %d, "lights": [13, 14, 15], "curtains": [16, 17, 18], "sockets": [true, false, true] }] }}#`, count, count, count, count, count, count)
-		// count++
+		fmt.Println(Read())
+	}
+}
 
+func main() {
+	Init("COM2", 9600)
+	// go ReadAndSave()
+	// count := 1
+	go readd()
+	for {
+		// rand.Seed(time.Now().UnixNano())
+		// count = rand.Intn(15) + 15
+		// data := fmt.Sprintf(`#{{ "stat": [{ "name": "Living Room", "temperature": %d, "humidity": %d , "lights": [101, 2, 3, 4], "curtains": [3, 101, 5, 6], "sockets": [true, true, false, true] }, { "name": "Kitchen", "temperature": %d, "humidity": %d, "lights": [7, 8, 9], "curtains": [10, 11, 12], "sockets": [false, true, false] }, { "name": "Bedroom", "temperature": %d, "humidity": %d, "lights": [13, 14, 15], "curtains": [16, 17, 18], "sockets": [true, false, true] }] }}#`, count, count, count, count, count, count)
+		// count++
+		data := "0_50_100,20_1,1,1,0"
 		SerialPort.Write([]byte(data))
 		time.Sleep(time.Second * 1)
 	}

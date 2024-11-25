@@ -3,88 +3,91 @@
 
 
 #include <Arduino.h>
-#include <vector>
+#include <DHT.h>
+
+
+#define MAX_LIGHTS 10       // 最大灯光数量
+#define MAX_CURTAINS 10     // 最大窗帘数量
+#define MAX_SOCKETS 10      // 最大插座数量
 
 class Room {
     public:
         String Name;
-        double Temperature;
-        double Humidity;
-        std::vector<int> LightsOn;
-        std::vector<int> CurtainsON;
-        std::vector<bool> SocketsOn;
-        std::vector<bool> FansOn;
+        float Temperature;
+        float Humidity;
+        int LightCount;
+        int LightsOn[MAX_LIGHTS];
+        int CurtainCount;
+        int CurtainsON[MAX_CURTAINS];
+        int SocketCount;
+        bool SocketsOn[MAX_SOCKETS];
 
         Room(
-            String name, 
-            double temperature, 
-            double humidity, 
-            std::vector<int> lights_on, 
-            std::vector<int> curtains_on, 
-            std::vector<bool> sockets_on,
-            std::vector<bool> fans_on
+            String name,
+            float temperature,
+            float humidity,
+            int lightcount,
+            int lightson[],
+            int curtaincount,
+            int curtainson[],
+            int socketcount,
+            bool socketson[]
         );
-
         Room();
 };
 
 class RoomController {
     private:
         int DHT_PIN;
-        std::vector<int> LIGHT_PINS;
-        std::vector<int> CURTAIN_PINS;
-        std::vector<int> SOCKET_PINS;
-        std::vector<String> SOCKET_ADDRS;
-        std::vector<int> FAN_PINS;
-        std::vector<String> FAN_ADDRS;
+        DHT *Dht;
+        int LIGHT_PINS[MAX_LIGHTS];
+        int CURTAIN_PINS[MAX_CURTAINS];
+        int SOCKET_PINS[3];
+        byte *SOCKET_STATE;
+        byte SOCKET_ADDRS[MAX_SOCKETS];
 
     public:
-        Room ROOM;
+        Room *ROOM;
         
         RoomController(
-            Room room,
+            Room *room,
             int dht_pin,
-            std::vector<int> light_pins,
-            std::vector<int> curtain_pins,
-            std::vector<int> socket_pins,
-            std::vector<String> socket_addrs,
-            std::vector<int> fan_pins,
-            std::vector<String> fan_addrs
+            int light_pins[],
+            int curtain_pins[],
+            int socket_pins[2],
+            byte *socket_state,
+            byte socket_addrs[]
         );
 
-        RoomController();
-        RoomController(Room room);
+        void Init();
+        void DHTBegin();
+
+        float GetTemperature();
+        float GetHumidity();
 
         bool SetDHTPin(int pin);
-        bool SetLightPins(std::vector<int> pins);
-        bool SetCurtainPins(std::vector<int> pins);
-        bool SetSocketPins(std::vector<int> pins);
-        bool SetSocketAddrs(std::vector<String> addrs);
-        bool SetFanPins(std::vector<int> pins);
-        bool SetFanAddrs(std::vector<String> addrs);
+        bool SetLightPins(int* pins);
+        bool SetCurtainPins(int* pins);
+        bool SetSocketPins(int* pins);
+        bool SetSocketAddrs(String* addrs);
+        bool SetFanPins(int* pins);
+        bool SetFanAddrs(String* addrs);
 
         int GetDHTPin();
-        std::vector<int> GetLightPins();
-        std::vector<int> GetCurtainPins();
-        std::vector<int> GetSocketPins();
-        std::vector<String> GetSocketAddrs();
-        std::vector<int> GetFanPins();
-        std::vector<String> GetFanAddrs();
+        int* GetLightPins();
+        int* GetCurtainPins();
+        int* GetSocketPins();
+        String* GetSocketAddrs();
+        
+        DHT* GetDht();
 
-        bool ReadDHT();
-        bool SetLights(std::vector<int> lights);
-        bool SetCurtains(std::vector<int> curtains);
-        bool SetSockets(std::vector<bool> sockets);
-        bool SetFans(std::vector<int> fans);
+        void SetLights(int lights[MAX_LIGHTS]);
+        void SetCurtains(int curtains[MAX_CURTAINS]);
+        void SetSockets(bool sockets[MAX_SOCKETS]);
 };
 
-class JsonEncoder {
-    public:
-        Room ROOM;
 
-        JsonEncoder(Room room);
-
-        String Encode();
-};
+void JsonPrint(RoomController *controllers, int count);
+void PrintStatus(RoomController* rc, int count);
 
 #endif
