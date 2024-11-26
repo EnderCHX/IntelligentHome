@@ -179,7 +179,7 @@ void auto_light_curtain(void *pvParameters) {
     for (;;) {
         roomController.AutoLight(200, 1000);
         roomController.AutoCurtain(200, 1000);
-        roomController.UpdateTemperatureAndHumidityAndLDRValue();
+        // roomController.UpdateTemperatureAndHumidityAndLDRValue();
 
         dht.read(roomController.GetDHTPin());
         roomController.ROOM->Temperature = dht.temperature;
