@@ -87,8 +87,8 @@ void RoomController::Init() {
 }
 
 void RoomController::UpdateTemperatureAndHumidityAndLDRValue() {
-    byte data[40];
-    Dht.read2(&ROOM->Temperature, &ROOM->Humidity, data);
+    // byte data[40];
+    // Dht.read2(&ROOM->Temperature, &ROOM->Humidity, data);
     ROOM->LDRValue = analogRead(LDR_PIN);
 }
 
@@ -149,10 +149,10 @@ void RoomController::AutoCurtain(int min, int max) {
             continue;
         }
         if (ROOM->LDRValue > max) {
-            Servos[i].write(0);
+            Servos[i].write(180);
         }
         if (ROOM->LDRValue < min) {
-            Servos[i].write(180);
+            Servos[i].write(0);
         }
         if (ROOM->LDRValue >= min && ROOM->LDRValue <= max) {
             Servos[i].write(int(180 * (ROOM->LDRValue - min) / ((max - min) / 100)));
